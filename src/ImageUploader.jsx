@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, use } from "react";
 
 function ImageUploader() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -6,28 +6,26 @@ function ImageUploader() {
   const [memeText, setMemeText] = useState("");
   const [wordList, setWordList] = useState([]);
   const [wikiTitles, setWikiTitles] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load dictionary words
-    fetch("/dictionaryWords.json")
+  Promise.all([
+    fetch("https://bellamy-bec44.web.app/dictionaryWords.json")
+      .then((res) => res.json()),
+    fetch("https://bellamy-bec44.web.app/wikiTitles.filtered.json")
       .then((res) => res.json())
-      .then((data) => {
-        setWordList(data);
-      })
-      .catch((err) => {
-        console.error("Failed to load dictionaryWords.json:", err);
-      });
+  ])
+    .then(([dictionaryData, wikiData]) => {
+      setWordList(dictionaryData);
+      setWikiTitles(wikiData);
+      setLoading(false); 
+    })
+    .catch((err) => {
+      console.error("Error loading data:", err);
+      setLoading(false);  
+    });
+}, []);
 
-    // Load wiki titles
-    fetch("/wikiTitles.json")
-      .then((res) => res.json())
-      .then((data) => {
-        setWikiTitles(data);
-      })
-      .catch((err) => {
-        console.error("Failed to load wikiTitles.json:", err);
-      });
-  }, []);
 
   const canvasRef = useRef(null);
 
@@ -60,6 +58,12 @@ function ImageUploader() {
     image.src = previewURL;
 
     image.onload = () => {
+    const displayWidth = 300;  
+    const displayHeight = (image.height / image.width) * displayWidth;
+
+    canvas.width = displayWidth;
+    canvas.height = displayHeight;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
@@ -135,12 +139,12 @@ function ImageUploader() {
             style={{ width: "300px", height: "auto" }}
           />
           <p>Get Ready to Speak Bellamese</p>
-          <button onClick={generateMemeText}>Generate Your Meme</button>
+          <button onClick={generateMemeText} disabled={loading}>
+            {loading ? "loading..." : "Generate Your Meme"}
+          </button>
           <p style={{ fontSize: "20px" }}>{memeText}</p>
           <canvas
             ref={canvasRef}
-            width={300}
-            height={300}
             style={{ border: "1px solid black", marginTop: "1rem" }}
           ></canvas>
         </div>

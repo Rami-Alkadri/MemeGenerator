@@ -25,3 +25,7 @@ dist-ssr
 public/dictionaryWords.json
 public/wikiTitles.json
 public/dictionaryWords.json
+.firebase
+.firebaserc
+firebase.json
+wikiTitles.filtered.json

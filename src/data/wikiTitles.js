@@ -11,7 +11,8 @@ console.log("Data loaded from enwiki-20250221-all-media-titles.txt");
 const lines = data.split("\n").filter(Boolean);
 const filteredTitles = lines
   .map(line => line.replace(/_/g, " ").replace(/\.[a-zA-Z]+$/, "").replace(/\s*\([^)]*\)$/, ""))
-  .filter(title => title.split(" ").length <= 4);
+  .filter(title => title.split(" ").length <= 4)
+  .filter(title => !title.toLowerCase().endsWith(" logo"));
 
 fs.writeFileSync(
   path.join(__dirname, "../../public/wikiTitles.json"),
