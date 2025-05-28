@@ -5,7 +5,6 @@ A fun and interactive React web application that lets users upload an image, ove
 ## Live Demo
 
 [🎬 Watch it live!](https://bellamy-bec44.web.app/)
-(Replace with your deployed link)
 
 ---
 
